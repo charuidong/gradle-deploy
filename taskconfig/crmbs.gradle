@@ -1,0 +1,40 @@
+//相关文档svnant-1.3.1/doc/svntask.html
+
+//检出CRMWEB项目
+task checkoutcrmweb << {
+    println "正在 checkout crmweb......."
+    ant.svn(javahl: 'false', svnkit: 'true',failonerror: 'false',username:"${svn_crmweb_user}",password:"${svn_crmweb_passwd}"){
+        ant.checkout(url: "${svn_crmweb_url}/crm-web/src", destPath: "${server_crmweb_path}")
+    }
+}
+
+//更新CRMWEB项目
+task updatecrmweb << {
+    println "正在 undate crmweb......."
+    ant.svn(javahl: 'false', svnkit: 'true',failonerror: 'false',username:"${svn_crmweb_user}",password:"${svn_crmweb_passwd}"){
+        ant.update(dir: "${server_crmweb_path}", recurse:"true")
+    }
+}
+
+//删除CRMWEB项目
+task cleanupcrmweb << {
+    println "正在 cleanup crmweb......."
+    ant.svn(javahl: 'false', svnkit: 'true',failonerror: 'false',username:"${svn_crmweb_user}",password:"${svn_crmweb_passwd}"){
+        ant.cleanup(dir: "${server_crmweb_path}")
+    }
+}
+
+//删除CRMWEB项目
+task deletecrmweb << {
+    println "正在 delete crmweb......."
+    ant.delete(dir: "${server_crmweb_path}")
+}
+
+//回退到上一个版本
+task revertcrmweb << {
+    println "正在 revert crmweb......."
+    ant.svn(javahl: 'false', svnkit: 'true',failonerror: 'false',username:"${svn_crmweb_user}",password:"${svn_crmweb_passwd}"){
+        ant.revert(dir: "${server_crmweb_path}")
+    }
+}
+

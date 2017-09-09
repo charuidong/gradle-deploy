@@ -1,0 +1,4 @@
+.gradle
+.idea
+gradle-deploy.iml
+settings.gradle
