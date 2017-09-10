@@ -16,9 +16,15 @@ ext {
 }
 
 //引入自定义任务
-apply from: "taskconfig/crmbs.gradle"
+apply  from: "cacheweb_sh/svn.gradle"
+apply  from: "cacheweb_sh/deploy.gradle"
 
 sourceCompatibility = 1.8
+
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
 
 repositories {
     mavenCentral()

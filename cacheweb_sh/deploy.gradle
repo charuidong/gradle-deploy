@@ -1,0 +1,74 @@
+// clean maven repo 
+task removeRepo(type:Exec) {
+	
+      workingDir "$projectDir"
+      commandLine 'sh','cacheweb_sh/cleanRepo.sh'
+      doLast{
+         println "clean mvn repo jar......"
+      }  
+}
+
+// maven create war
+//task mvnbuild(type:Exec,dependsOn:removeRepo) {
+task mvnbuild(type:Exec) {
+
+      workingDir "$projectDir"
+      commandLine 'sh','cacheweb_sh/mvnbuild.sh'
+      doLast{
+         println "compile project......"
+      }
+}
+
+// shell bake a project
+task bakeProject(type:Exec,dependsOn:mvnbuild) {
+
+      workingDir "$projectDir"
+      commandLine 'sh','cacheweb_sh/bake.sh'
+      doLast{
+         println "bake the project version......"
+      }
+    
+}
+
+// shell bake a project
+task copyProWar(type: Copy,dependsOn:bakeProject) {
+    from "${cacheweb_war_path}"
+    into "${deploy_cacheweb_path}"
+    include 'crm-cache-web.war'
+}
+  
+// unzip a project war  
+task unzipPro(type:Exec,dependsOn:copyProWar) {
+    
+    workingDir "$projectDir"
+    commandLine 'sh', 'cacheweb_sh/unzip.sh'
+    doLast{
+       println "unzip the war......"
+    }
+}
+       
+// config file is replaced
+task replaceConf1(type: Copy,dependsOn:unzipPro) {
+           from "$projectDir/env_conf_bake"
+           into "${deploy_cacheweb_path}/WEB-INF/classes"
+           include 'dubbo-client-appconfig.xml'
+}
+
+// config file is replaced
+task replaceConf2(type: Copy,dependsOn:unzipPro) {
+           from "$projectDir/env_conf_bake"
+           into "${deploy_cacheweb_path}/WEB-INF/classes"
+           include 'redis_cluster.props'
+}
+
+// config file is replaced
+task replaceConf3(type: Copy,dependsOn:unzipPro) {
+           from "$projectDir/env_conf_bake"
+           into "${deploy_cacheweb_path}/WEB-INF/classes"
+           include 'redis.props'
+}
+
+// deploy a project
+task deploycacheweb(dependsOn:[replaceConf1,replaceConf2,replaceConf3]) << {
+		println "finished to deploy crmweb......"
+}
