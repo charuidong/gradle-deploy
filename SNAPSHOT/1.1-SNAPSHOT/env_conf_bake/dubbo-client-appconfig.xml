@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:crm="http://code.eshore.com/schema/crm"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://code.eshore.com/schema/crm
+	http://code.eshore.com/schema/crm/crm.xsd">
+
+	<!-- 消费方应用名，用于计算依赖关系，不是匹配条件，不要与提供方一样 -->
+	<crm:application name="crm-web-client-local"
+		organization="200" cityids="200,755,769" />
+
+
+	<!-- 使用multicast广播注册中心暴露服务地址 (本地调试适用) -->
+
+	<!-- 本地调试,不过注册中心 -->
+	<crm:registry id="reg-local" address="N/A" />
+
+
+	<!-- 使用zookeeper 注册服务 -->
+
+	<crm:registry id="reg-zk181" default="false"
+		address="zookeeper://132.121.95.181:12181" />
+
+	<crm:registry id="reg-zk182" default="false"
+		address="zookeeper://132.121.95.182:12181" />
+
+	<crm:registry id="reg-zk183" default="false"
+		address="zookeeper://132.121.95.183:12181" />
+
+	<!-- 多注册中心配置，竖号分隔表示同时连接多个不同注册中心，同一注册中心的多个集群地址用逗号分隔 -->
+
+
+	<!-- 使用监控统计: 使用注册中心发现监控中心地址 -->
+	<crm:monitor protocol="registry" />
+	<!-- 直连监控中心地址的方式 <crm:monitor address="132.121.91.216:7080"/> -->
+
+
+	<!-- 开发环境注册中心集群 new 2016-01-18 -->
+	<crm:registry id="reg-dev" check="false"
+		address="zookeeper://132.126.2.236:12181" default="false" />
+	<!-- BS改造开发集群 -->
+	<crm:registry id="reg-dev60" check="false"
+		address="zookeeper://132.121.100.29:16060" default="false" />
+
+	<!-- BS改造开发集群 -->
+	<crm:registry id="reg-dev215" check="false"
+		address="zookeeper://132.122.1.214:12181" default="false" />
+
+	<!-- BS改造上线集群 -->
+	<crm:registry id="reg-cluster" check="false"
+		address="zookeeper://132.121.100.37:16060?backup=132.121.100.45:16060,132.121.100.53:16060,132.121.100.69:16060,132.121.100.70:16060"
+		default="false" />
+
+	<crm:registry id="reg-dev213" check="false"
+		address="zookeeper://132.122.1.209:12181" default="false" />
+
+	<!-- BS改造后端环境 非运行时检查提供者连通性 check="false" -->
+	<crm:consumer timeout="180000" check="false" filter="webRPCFilter"
+		connections="1" registry="reg-dev" />
+
+</beans>
