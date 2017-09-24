@@ -13,7 +13,8 @@ installFun()
 {
      echo $1
     cd $1
-    mvn clean install -T 1C -Dmaven.test.skip=true  -Dmaven.compile.fork=true
+   ## mvn clean install -T 1C -Dmaven.test.skip=true  -Dmaven.compile.fork=true
+    mvn  -e -T2 -Dmaven.test.skip=true clean  install
 }
 
 ## packageFun
@@ -21,7 +22,8 @@ packageFun ()
 {
     echo $1
     cd $1
-    mvn clean package -T 1C -Dmaven.test.skip=true  -Dmaven.compile.fork=true
+    ##mvn clean package -T 1C -Dmaven.test.skip=true  -Dmaven.compile.fork=true
+    mvn  -e -T2 -Dmaven.test.skip=true clean package
 }
 
 ## install or deploy dependent app

@@ -1,0 +1,61 @@
+//task 执行错误是提示 或者 抛异常，终止task 或者 判断是否有该属性
+
+task rempveBeforeApp << {
+    def beforeDepWarPath="$do_depwar_path$host/$depServMap.servName"
+    def beforeDepWar="$do_depwar_path$host/$depServMap.servName"+".war"
+    def dirPath = new File(beforeDepWarPath)
+    def dirWar = new File(beforeDepWar)
+    deleteDir(dirPath)
+    deleteDir(dirWar)
+    println "  moreServer deploy : >>>>>>>>>>>>>>>>>>>>>>>>>>>  The task rempveBeforeApp sucessful executed ...... "
+    println "  moreServer deploy :  >>>>>>>>>>>>>>>>>>>>>>>>>>>  The task rempveBeforeApp sucessful executed : remove the before project $depServMap.servName app and war ...... "
+}
+
+// shell copy deploy a project
+//task copyDepApp(type: Copy) {
+task copyDepApp(type: Copy,dependsOn:rempveBeforeApp) {
+    from "$depServMap.servPath"
+    into "$do_depwar_path"+"$host"
+    include "$depServMap.servName/"
+    doLast{
+        println "  moreServer deploy :  >>>>>>>>>>>>>>>>>>>>>>>>>>>  The task copyDepApp sucessful executed : copy the project $depServMap.servName app to $do_depwar_path$host space ...... "
+    }
+}
+
+// config file is replaced
+task replaceDepConf(type: Copy,dependsOn:copyDepApp) {
+//task replaceConf1(type: Copy) {
+    for(Map.Entry<Integer, String> entry : envConfMap.entrySet()){
+        def confPath = entry.getKey()
+        def confArr=envConfMap[confPath]
+        for( String confFile in confArr){
+            from "$do_depwar_path"+"$host"
+            into "$do_depwar_path"+"$host/$depServMap.servName/$confPath"
+            include "$confFile"
+            println "  moreServer deploy :  The config file >>>>>>>>>>>>>>>>>>  $confFile <<<<<<<<<<<<<<<<<< is replaced"
+        }
+    }
+    doLast{
+        println "  moreServer deploy :  >>>>>>>>>>>>>>>>>>>>>>>>>>>  The task replaceDepConf sucessful executed : the project $depServMap.servName all config file  is replaced ...... "
+    }
+}
+
+//gradle doDepwar -Phost=60  , 通过 -P 指定 host变量
+//task doDepwar(dependsOn:[replaceConf1]) << {
+task doDepwar(type:Exec,dependsOn:replaceDepConf) {
+    println host
+    workingDir "$projectDir"
+    executable 'sh'
+    args "-c","${dep_appsh_path}/do_depwar.sh $do_depwar_path$host $depServMap.servName "
+    doLast{
+        println "  moreServer deploy :  >>>>>>>>>>>>>>>>>>>>>>>>>>>  The task doDepwar sucessful executed : do deploy $host war completed......"
+    }
+}
+
+//gradle deploymore -Phost=60
+task deploymore(dependsOn:doDepwar) << {
+//task deploymore << {
+//    println host
+}
+
+//doDepwar.finalizedBy()

@@ -1,0 +1,79 @@
+// clean maven repo 
+task removeRepo(type:Exec) {
+
+    workingDir "$projectDir"
+    commandLine 'sh',"${dep_appsh_path}/cleanRepo.sh"
+    doLast{
+        println "  singleServer deploy : >>>>>>>>>>>>>>>>>>>>>>>>>>>  The task removeRepo sucessful executed : clean $depServMap.servName mvn repo jar............ "
+    }
+}
+
+// maven create war
+//task mvnbuild(type:Exec,dependsOn:removeRepo) {
+task mvnbuild(type:Exec) {
+    workingDir "$projectDir"
+    // 调用带参数的shell脚本
+    executable 'sh'
+    args "-c","${dep_appsh_path}/mvnbuild.sh $compileAppMap.appPath/crm-cache-web $compileAppMap.appPath/cache-platmgr"
+    doLast{
+        println "  singleServer deploy : >>>>>>>>>>>>>>>>>>>>>>>>>>>  The task mvnbuild sucessful executed : compile the project $depServMap.servName ...... "
+    }
+}
+
+// shell bake a project
+//task bakeApp(type:Exec) {
+task bakeApp(type:Exec,dependsOn:mvnbuild) {
+    workingDir "$projectDir"
+    executable 'sh'
+    args "-c","${dep_appsh_path}/bake.sh $depServMap.servPath/$depServMap.servName $relatedFolderMap.bakAppPath/$depServMap.servName"
+    doLast{
+        println "  singleServer deploy : >>>>>>>>>>>>>>>>>>>>>>>>>>>  The task bakeApp sucessful executed : bake the project $depServMap.servName version ...... "
+    }
+}
+
+// shell bake a project
+task copyProWar(type: Copy) {
+//task copyProWar(type: Copy,dependsOn:bakeApp) {
+    from "$compileAppMap.appPath/$compileAppMap.appName/target"
+    into "$depServMap.servPath"
+    include "$compileAppMap.appName"+".war"
+    rename{"$depServMap.servName"+".war"}
+    doLast{
+        println "  singleServer deploy : >>>>>>>>>>>>>>>>>>>>>>>>>>>  The task copyProWar sucessful executed : copy the project $depServMap.servName war to tomcat webapps ...... "
+
+    }
+}
+
+// unzip a project war
+//task unzipPro(type:Exec) {
+task unzipPro(type:Exec,dependsOn:copyProWar) {
+    workingDir "$projectDir"
+    executable 'sh'
+    args "-c","${dep_appsh_path}/unzip.sh $depServMap.servPath $depServMap.servName"
+    doLast{
+        println "  singleServer deploy : >>>>>>>>>>>>>>>>>>>>>>>>>>>  The task unzipPro sucessful executed : unzip the project $depServMap.servName war to tomcat webapps ...... "
+    }
+}
+
+// config file is replaced
+task replaceConf(type: Copy,dependsOn:unzipPro) {
+//task replaceConf1(type: Copy) {
+    for(Map.Entry<Integer, String> entry : envConfMap.entrySet()){
+        def confPath = entry.getKey()
+        def confArr=envConfMap[confPath]
+        for( String confFile in confArr){
+            from "$relatedFolderMap.confPath"
+            into "$depServMap.servPath/$depServMap.servName/$confPath"
+            include "$confFile"
+            println "  singleServer deploy : The config file >>>>>>>>>>>>>>>>>>  $confFile <<<<<<<<<<<<<<<<<< is replaced"
+        }
+    }
+    doLast{
+        println "  singleServer deploy : >>>>>>>>>>>>>>>>>>>>>>>>>>>  The task replaceConf sucessful executed : the project $depServMap.servName all config file  is replaced ...... "
+    }
+}
+
+// deploy a project
+task deployapp(dependsOn:[replaceConf]) << {
+    println "  singleServer deploy : >>>>>>>>>>>>>>>>>>>>>>>>>>>  The task deployapp sucessful executed : the project $depServMap.servName successful deployed ...... "
+}

@@ -1,2 +1,11 @@
-# gradle-deploy
-gradle 自动化部署 javaweb 项目
+# gradle-deploy--1.3-SNAPSHOT
+
+## 新增功能
+1、多机部署
+> 将项目根据不同的环境打包发布到相应的服务器
+
+## 优化功能
+1、调整文件结构如下
+> 单机部署
+> 多机部署
+
