@@ -8,13 +8,35 @@ task removeRepo(type:Exec) {
     }
 }
 
+// be dependent on project before install
+task relyAppInstall(type:Exec) {
+    if(is_exist_dependency){ //如果存在依赖，在先安装依赖
+        for(Map.Entry<Integer, String> entry : dependencyAppMap.entrySet()){
+            def relyAppPath = entry.getKey()
+            def relyAppArr=dependencyAppMap[relyAppPath]
+            println relyAppPath
+            println relyAppArr
+            for( String relyApp in relyAppArr){
+                workingDir "$projectDir"
+                // 调用带参数的shell脚本
+                executable 'sh'
+                args "-c", "${dep_appsh_path}/relyinstall.sh  F:/server/sourcePro/cacheweb/cache-platmgr"
+                println "  singleServer deploy : The dependent project >>>>>>>>>>>>>>>>>>  $relyApp <<<<<<<<<<<<<<<<<< is installed"
+            }
+        }
+    }
+    doLast{
+        println "  singleServer deploy : >>>>>>>>>>>>>>>>>>>>>>>>>>>  The task relyAppInstall sucessful executed : the project $depServMap.servName dependent is installed...... "
+    }
+}
+
 // maven create war
-//task mvnbuild(type:Exec,dependsOn:removeRepo) {
-task mvnbuild(type:Exec) {
+//task mvnbuild(type:Exec) {
+task mvnbuild(type:Exec,dependsOn:relyAppInstall) {
     workingDir "$projectDir"
     // 调用带参数的shell脚本
     executable 'sh'
-    args "-c","${dep_appsh_path}/mvnbuild.sh $compileAppMap.appPath/crm-cache-web $compileAppMap.appPath/cache-platmgr"
+    args "-c","${dep_appsh_path}/mvnbuild.sh $compileAppMap.appPath/$compileAppMap.appName"
     doLast{
         println "  singleServer deploy : >>>>>>>>>>>>>>>>>>>>>>>>>>>  The task mvnbuild sucessful executed : compile the project $depServMap.servName ...... "
     }

@@ -9,7 +9,7 @@ apply plugin: 'war'
 apply  from: "depapp_sh/utils.gradle"
 apply  from: "depapp_sh/init.gradle"
 apply  from: "depapp_sh/svn.gradle"
-//apply  from: "depapp_sh/single_dep.gradle"
+apply  from: "depapp_sh/single_dep.gradle"
 //apply  from: "depapp_sh/more_dep.gradle"
 
 
