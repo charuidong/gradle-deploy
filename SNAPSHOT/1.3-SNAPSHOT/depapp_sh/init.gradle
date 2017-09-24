@@ -1,0 +1,27 @@
+// gradle.properties 相关变量重载 加入为 Project对象的属性
+
+ext{
+    svnMap =evaluate(svn_map)
+    compileAppMap =evaluate(compile_app_map)
+    depServMap =evaluate(dep_serv_map)
+    dependencyAppMap =evaluate(dependency_app_map)
+    relatedFolderMap =evaluate(related_folder_map)
+    envConfMap =evaluate(env_conf_map)
+}
+
+// 初始化资源
+task depinit << {
+    println "  init gradle deploy need more reource ! "
+    createMapDir(relatedFolderMap)
+    doLast{
+        println "  gradle-deploy common init : >>>>>>>>>>>>>>>>>>>>>>>>>>>  The task depinit sucessful executed : create related resource folder ............ "
+    }
+//    for(Map.Entry<Integer, String> entry : relatedFolderMap.entrySet()){
+//        def key = entry.getKey()
+//        createDir(relatedFolderMap[key]);
+//    }
+}
+
+
+
+

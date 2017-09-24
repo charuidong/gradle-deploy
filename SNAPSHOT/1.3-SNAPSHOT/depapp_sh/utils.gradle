@@ -1,0 +1,56 @@
+// deploy app utils
+
+//创建一个文件夹
+def createDir(dirPath){
+    def reourceDir = new File(dirPath)
+    if (!reourceDir.isDirectory()) {
+        reourceDir.mkdirs()
+        println "  gradle-deploy utils log : the function createDir >>>>>>>>>>>>>>>>>>>>>>>>>>> The reource fodler $dirPath created success !"
+    }
+}
+
+//创建一个文件夹
+def createDir(dirPath,dirName){
+    def reourceDir = new File(dirPath+dirName)
+    if (!reourceDir.isDirectory()) {
+        reourceDir.mkdirs()
+        println "  gradle-deploy utils log : the function createDir >>>>>>>>>>>>>>>>>>>>>>>>>>> The reource fodler create success !"
+    }
+}
+
+// 批量创建文件夹
+def createMapDir(java.util.LinkedHashMap reourceMap){
+    for(Map.Entry<Integer, String> entry : reourceMap.entrySet()){
+        def key = entry.getKey()
+        createDir(reourceMap[key]);
+    }
+}
+
+/**
+ * 递归删除目录下的所有文件及子目录下所有文件
+ * @param dir 将要删除的文件目录
+ * @return boolean Returns "true" if all deletions were successful.
+ *                 If a deletion fails, the method stops attempting to
+ *                 delete and returns "false".
+ */
+def deleteDir(File dir) {
+    println "remove the Folder is $dir"
+    if (dir.isDirectory()) {
+        String[] children = dir.list();
+        //递归删除目录中的子目录下
+        for (int i=0; i<children.length; i++) {
+            boolean success = deleteDir(new File(dir, children[i]));
+            if (!success) {
+                return false;
+            }
+        }
+    }
+    // 目录此时为空，可以删除
+    return dir.delete();
+}
+
+ext{
+    createDir =this.&createDir
+    createMapDir =this.&createMapDir
+    deleteDir =this.&deleteDir
+}
