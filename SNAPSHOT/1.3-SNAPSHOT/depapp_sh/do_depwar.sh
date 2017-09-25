@@ -1,4 +1,5 @@
 #!/bin/sh
+# fileformat window[doc] linux[unix]
 
 #do deploy more server war
 workSpace=$1

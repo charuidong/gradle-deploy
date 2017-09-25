@@ -1,4 +1,5 @@
 #!/bin/sh
+# fileformat window[doc] linux[unix]
 
 #解压jar包
 depTomcatPath=$1

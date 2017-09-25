@@ -1,6 +1,7 @@
 #!/bin/sh
-## 注意此处至少传递一个参数，作为待安装项目
+# fileformat window[doc] linux[unix]
 
+## 注意此处至少传递一个参数，作为待安装项目
 relyAppPath=$1
 
 ## installFun
