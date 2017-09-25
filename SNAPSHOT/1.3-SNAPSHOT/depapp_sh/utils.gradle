@@ -34,7 +34,7 @@ def createMapDir(java.util.LinkedHashMap reourceMap){
  *                 delete and returns "false".
  */
 def deleteDir(File dir) {
-    println "remove the Folder is $dir"
+    println "  remove the Folder is $dir"
     if (dir.isDirectory()) {
         String[] children = dir.list();
         //递归删除目录中的子目录下
